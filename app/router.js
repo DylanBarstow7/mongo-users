@@ -1,16 +1,8 @@
 import Router from "express";
+import usersController from "./controller.js";
+import userModel from "./model.js";
 
 const router = new Router();
-
-// TODO: Add routes here (maybe 🤔 start with a GET test route)
-router.get("/", async (_, res) => {
-  try {
-    const users = await usersController.index();
-    res.json(users);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-});
 
 router.post("/", async (req, res) => {
   try {
@@ -18,10 +10,12 @@ router.post("/", async (req, res) => {
     const newUser = await usersController.add(validatedUser);
     res.status(201).json(newUser);
   } catch (error) {
-    req.status(400);
+    if (error.message.startsWith("User")) {
+    res.status(400).send(error.message);
+  } else {
+    res.status(500).send(error.message);
+    }
   }
 });
-
-
 
 export default router;
